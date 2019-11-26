@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String passwordValidator(String value) {
     if (value.isEmpty) {
-      return 'Please enter a valid e-mail address';
+      return 'Please enter a valid password';
     }
     return null;
   }

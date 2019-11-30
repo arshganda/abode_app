@@ -53,20 +53,22 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(hintText: 'Password'),
+              decoration: InputDecoration(
+                hintText: 'Password',
+              ),
               validator: passwordValidator,
             ),
             TextFormField(
               controller: _firstNameController,
               decoration: InputDecoration(
-                hintText: 'E-mail',
+                hintText: 'First name',
               ),
               validator: nameValidator,
             ),
             TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
-                hintText: 'E-mail',
+                hintText: 'Last name',
               ),
               validator: nameValidator,
             ),
@@ -84,15 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 return null;
               },
             ),
-            FlatButton(
-              child: Text('Create account'),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => RegisterPage()));
-              },
-            )
           ],
         ),
       ),

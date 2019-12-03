@@ -7,7 +7,12 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Home page'),
       ),
-      body: Container(child: Text('Yeet')),
+      body: Column(
+        children: <Widget>[
+          ExpansionTile(title: Text('Create house')),
+          ExpansionTile(title: Text('Join house'))
+        ],
+      ),
     );
   }
 }

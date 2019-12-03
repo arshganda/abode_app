@@ -46,6 +46,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextFormField(
               controller: _passwordController,
+              obscureText: true,
+              autocorrect: false,
               decoration: InputDecoration(hintText: 'Password'),
               validator: passwordValidator,
             ),
@@ -80,7 +82,18 @@ class _LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(
                         builder: (BuildContext context) => RegisterPage()));
               },
-            )
+            ),
+            Row(
+              children: <Widget>[
+                FlatButton(
+                  child: Text('Forgot username?'),
+                  onPressed: () {
+                    // Trigger some sort of forgot username flow
+                  },
+                ),
+                FlatButton(child: Text('Forgot password?')),
+              ],
+            ),
           ],
         ),
       ),

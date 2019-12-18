@@ -16,10 +16,12 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   String emailValidator(String value) {
-    if (value.isEmpty) {
-      return 'Please enter a valid e-mail address';
+    RegExp exp = RegExp(
+        r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+    if (exp.hasMatch(value)) {
+      return null;
     }
-    return null;
+    return 'Please enter a valid e-mail address';
   }
 
   String passwordValidator(String value) {
@@ -67,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(
                               builder: (BuildContext context) => HomePage()));
                   } catch (e) {
+                    print(e);
                     return null;
                   }
                   return true;

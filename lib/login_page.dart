@@ -10,7 +10,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -33,6 +32,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    FocusNode focusNode = FocusNode();
+
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
       body: Form(
@@ -42,9 +43,14 @@ class _LoginPageState extends State<LoginPage> {
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 hintText: 'E-mail',
               ),
               validator: emailValidator,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (String value) =>
+                  FocusScope.of(context).requestFocus(focusNode),
             ),
             TextFormField(
               controller: _passwordController,
@@ -52,30 +58,44 @@ class _LoginPageState extends State<LoginPage> {
               autocorrect: false,
               decoration: InputDecoration(hintText: 'Password'),
               validator: passwordValidator,
+              focusNode: focusNode,
+              textInputAction: TextInputAction.done,
             ),
-            RaisedButton(
-              child: Text('Submit'),
-              onPressed: () async {
-                if (_formKey.currentState.validate()) {
-                  try {
-                    FirebaseUser _user =
-                        (await _auth.signInWithEmailAndPassword(
-                                email: _emailController.text,
-                                password: _passwordController.text))
-                            .user;
-                    if (_user != null)
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => HomePage()));
-                  } catch (e) {
-                    print(e);
-                    return null;
-                  }
-                  return true;
-                }
-                return null;
-              },
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      child: Text('Submit'),
+                      color: Theme.of(context).accentColor,
+                      textColor: Colors.white,
+                      onPressed: () async {
+                        if (_formKey.currentState.validate()) {
+                          try {
+                            FirebaseUser _user =
+                                (await _auth.signInWithEmailAndPassword(
+                                        email: _emailController.text,
+                                        password: _passwordController.text))
+                                    .user;
+                            if (_user != null)
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          HomePage()));
+                          } catch (e) {
+                            print(e);
+                            return null;
+                          }
+                          return true;
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
             FlatButton(
               child: Text('Create account'),

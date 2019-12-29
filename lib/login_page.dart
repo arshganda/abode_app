@@ -33,93 +33,117 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     FocusNode focusNode = FocusNode();
+    FocusNode focusNode2 = FocusNode();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'E-mail',
-              ),
-              validator: emailValidator,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (String value) =>
-                  FocusScope.of(context).requestFocus(focusNode),
-            ),
-            TextFormField(
-              controller: _passwordController,
-              obscureText: true,
-              autocorrect: false,
-              decoration: InputDecoration(hintText: 'Password'),
-              validator: passwordValidator,
-              focusNode: focusNode,
-              textInputAction: TextInputAction.done,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      child: Text('Submit'),
-                      color: Theme.of(context).accentColor,
-                      textColor: Colors.white,
-                      onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          try {
-                            FirebaseUser _user =
-                                (await _auth.signInWithEmailAndPassword(
-                                        email: _emailController.text,
-                                        password: _passwordController.text))
-                                    .user;
-                            if (_user != null)
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          HomePage()));
-                          } catch (e) {
-                            print(e);
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              padding: EdgeInsets.fromLTRB(16, 144, 16, 0),
+              color: Theme.of(context).primaryColor,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset("abode_logo.png"),
+                  Spacer(),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                      hintText: 'E-mail',
+                    ),
+                    validator: emailValidator,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    focusNode: focusNode,
+                    onFieldSubmitted: (String value) =>
+                        FocusScope.of(context).requestFocus(focusNode2),
+                  ),
+                  SizedBox(height: 6),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                      hintText: 'Password',
+                    ),
+                    validator: passwordValidator,
+                    focusNode: focusNode2,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: RaisedButton(
+                          child: Text('Submit'),
+                          color: Theme.of(context).accentColor,
+                          textColor: Colors.white,
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              try {
+                                FirebaseUser user =
+                                    (await _auth.signInWithEmailAndPassword(
+                                            email: _emailController.text,
+                                            password: _passwordController.text))
+                                        .user;
+                                if (user != null && user.isEmailVerified)
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              HomePage()));
+                              } catch (e) {
+                                print(e);
+                                return null;
+                              }
+                              return true;
+                            }
                             return null;
-                          }
-                          return true;
-                        }
-                        return null;
-                      },
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: FlatButton(
+                      child: Text('Forgot password?'),
                     ),
                   ),
-                ),
-              ],
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Don't have an account?"),
+                      FlatButton(
+                        child: Text('Sign up'),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      RegisterPage()));
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            FlatButton(
-              child: Text('Create account'),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => RegisterPage()));
-              },
-            ),
-            Row(
-              children: <Widget>[
-                FlatButton(
-                  child: Text('Forgot username?'),
-                  onPressed: () {
-                    // Trigger some sort of forgot username flow
-                  },
-                ),
-                FlatButton(child: Text('Forgot password?')),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }

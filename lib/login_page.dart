@@ -4,6 +4,8 @@ import 'package:reddit_ppl/forgot_password_page.dart';
 import 'package:reddit_ppl/home_page.dart';
 import 'package:reddit_ppl/register_page.dart';
 
+import 'util/login_util.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -14,15 +16,6 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  String emailValidator(String value) {
-    RegExp exp = RegExp(
-        r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-    if (exp.hasMatch(value)) {
-      return null;
-    }
-    return 'Please enter a valid e-mail address';
-  }
 
   String passwordValidator(String value) {
     if (value.isEmpty) {

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 String emailValidator(String value) {
   RegExp exp = RegExp(
       r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
@@ -21,4 +23,18 @@ String nameValidator(String value) {
     return null;
   }
   return 'Please enter a valid name.';
+}
+
+BoxDecoration buildBoxDecoration() {
+  return BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black12,
+        blurRadius: 6.0,
+        offset: Offset(0, 2.0),
+      ),
+    ],
+  );
 }

@@ -45,35 +45,39 @@ class _LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   Image.asset("abode_logo.png"),
                   Spacer(),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                      hintText: 'E-mail',
+                  Container(
+                    decoration: buildBoxDecoration(),
+                    child: TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'E-mail',
+                        contentPadding: EdgeInsets.all(16),
+                      ),
+                      validator: emailValidator,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      focusNode: focusNode,
+                      onFieldSubmitted: (String value) =>
+                          FocusScope.of(context).requestFocus(focusNode2),
                     ),
-                    validator: emailValidator,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    focusNode: focusNode,
-                    onFieldSubmitted: (String value) =>
-                        FocusScope.of(context).requestFocus(focusNode2),
                   ),
                   SizedBox(height: 6),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                      hintText: 'Password',
+                  Container(
+                    decoration: buildBoxDecoration(),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      autocorrect: false,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Password',
+                        contentPadding: EdgeInsets.all(16),
+                      ),
+                      validator: passwordValidator,
+                      focusNode: focusNode2,
+                      textInputAction: TextInputAction.done,
                     ),
-                    validator: passwordValidator,
-                    focusNode: focusNode2,
-                    textInputAction: TextInputAction.done,
                   ),
                   Row(
                     children: <Widget>[
@@ -82,6 +86,9 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text('Submit'),
                           color: Theme.of(context).accentColor,
                           textColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               try {

@@ -22,17 +22,7 @@ class ForgotPasswordPage extends StatelessWidget {
                 Spacer(),
                 Text("Please enter your registered e-mail"),
                 Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6.0,
-                        offset: Offset(0, 2.0),
-                      ),
-                    ],
-                  ),
+                  decoration: buildBoxDecoration(),
                   child: TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(

@@ -43,17 +43,15 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Image.asset("abode_logo.png"),
+                  Image.asset(
+                    "abode_logo.png",
+                  ),
                   Spacer(),
                   Container(
                     decoration: buildBoxDecoration(),
                     child: TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'E-mail',
-                        contentPadding: EdgeInsets.all(16),
-                      ),
+                      decoration: buildInputDecoration('E-mail'),
                       validator: emailValidator,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
@@ -62,23 +60,20 @@ class _LoginPageState extends State<LoginPage> {
                           FocusScope.of(context).requestFocus(focusNode2),
                     ),
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: 16),
                   Container(
                     decoration: buildBoxDecoration(),
                     child: TextFormField(
                       controller: _passwordController,
                       obscureText: true,
                       autocorrect: false,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Password',
-                        contentPadding: EdgeInsets.all(16),
-                      ),
+                      decoration: buildInputDecoration('Password'),
                       validator: passwordValidator,
                       focusNode: focusNode2,
                       textInputAction: TextInputAction.done,
                     ),
                   ),
+                  SizedBox(height: 10),
                   Row(
                     children: <Widget>[
                       Expanded(
@@ -137,9 +132,10 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      RegisterPage()));
+                              PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          RegisterPage()));
                         },
                       ),
                     ],

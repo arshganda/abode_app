@@ -25,11 +25,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   decoration: buildBoxDecoration(),
                   child: TextFormField(
                     controller: _emailController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'E-mail',
-                      contentPadding: EdgeInsets.all(16),
-                    ),
+                    decoration: buildInputDecoration('E-mail'),
                     validator: emailValidator,
                     keyboardType: TextInputType.emailAddress,
                   ),

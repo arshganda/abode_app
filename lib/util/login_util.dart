@@ -38,3 +38,11 @@ BoxDecoration buildBoxDecoration() {
     ],
   );
 }
+
+InputDecoration buildInputDecoration(String hintText) {
+  return InputDecoration(
+    border: InputBorder.none,
+    hintText: hintText,
+    contentPadding: EdgeInsets.all(16),
+  );
+}

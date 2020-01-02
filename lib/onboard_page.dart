@@ -72,8 +72,10 @@ class _OnBoardPageState extends State<OnBoardPage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () {
-                        MaterialPageRoute(
-                            builder: (context) => CreateHousePage());
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CreateHousePage()));
                       },
                     ),
                   ),
@@ -90,8 +92,10 @@ class _OnBoardPageState extends State<OnBoardPage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () {
-                        MaterialPageRoute(
-                            builder: (context) => JoinHousePage());
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => JoinHousePage()));
                       },
                     ),
                   ),

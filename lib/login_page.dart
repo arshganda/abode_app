@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reddit_ppl/forgot_password_page.dart';
-import 'package:reddit_ppl/home_page.dart';
+import 'package:reddit_ppl/onboard_page.dart';
 import 'package:reddit_ppl/register_page.dart';
 
 import 'util/login_util.dart';
@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (BuildContext context) =>
-                                              HomePage()));
+                                              OnBoardPage()));
                               } catch (e) {
                                 print(e);
                                 return null;

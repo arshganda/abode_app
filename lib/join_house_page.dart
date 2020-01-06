@@ -58,94 +58,10 @@ class _JoinHousePageState extends State<JoinHousePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Card(
-                    margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    elevation: 6.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        width: 32,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24.0,
-                          ),
-                          controller: card1,
-                          focusNode: focusNode,
-                          textInputAction: TextInputAction.next,
-                          onChanged: (String value) =>
-                              FocusScope.of(context).requestFocus(focusNode2),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    elevation: 6.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        width: 32,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24.0,
-                          ),
-                          controller: card2,
-                          focusNode: focusNode2,
-                          textInputAction: TextInputAction.next,
-                          onChanged: (String value) =>
-                              FocusScope.of(context).requestFocus(focusNode3),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    elevation: 6.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        width: 32,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24.0,
-                          ),
-                          controller: card3,
-                          focusNode: focusNode3,
-                          textInputAction: TextInputAction.next,
-                          onChanged: (String value) =>
-                              FocusScope.of(context).requestFocus(focusNode4),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    elevation: 6.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        width: 32,
-                        child: TextField(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24.0,
-                          ),
-                          controller: card4,
-                          focusNode: focusNode4,
-                          textInputAction: TextInputAction.next,
-                          onChanged: (String value) =>
-                              FocusScope.of(context).requestFocus(focusNode5),
-                        ),
-                      ),
-                    ),
-                  ),
+                  buildCard(card1, focusNode, context, focusNode2),
+                  buildCard(card2, focusNode2, context, focusNode3),
+                  buildCard(card3, focusNode3, context, focusNode4),
+                  buildCard(card4, focusNode4, context, focusNode5),
                   Card(
                     margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
                     elevation: 6.0,
@@ -206,6 +122,32 @@ class _JoinHousePageState extends State<JoinHousePage> {
                 ],
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Card buildCard(TextEditingController card1, FocusNode focusNode,
+      BuildContext context, FocusNode focusNode2) {
+    return Card(
+      margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
+      elevation: 6.0,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          width: 32,
+          child: TextField(
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              fontSize: 24.0,
+            ),
+            controller: card1,
+            focusNode: focusNode,
+            textInputAction: TextInputAction.next,
+            onChanged: (String value) =>
+                FocusScope.of(context).requestFocus(focusNode2),
           ),
         ),
       ),

@@ -13,16 +13,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool isSubmitting = false;
+  bool isFormInvalid = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  FocusNode focusNode = FocusNode();
+  FocusNode focusNode2 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    FocusNode focusNode = FocusNode();
-    FocusNode focusNode2 = FocusNode();
-
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
@@ -42,35 +43,51 @@ class _LoginPageState extends State<LoginPage> {
                     width: 200.0,
                   ),
                   Spacer(),
+                  if (isFormInvalid)
+                    Column(
+                      children: <Widget>[
+                        Text(
+                          "Your e-mail/password are invalid.",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 16)
+                      ],
+                    ),
                   Container(
                     decoration: buildBoxDecoration(),
-                    child: TextFormField(
-                        controller: _emailController,
-                        decoration: buildInputDecoration('E-mail'),
-                        validator: emailValidator,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        focusNode: focusNode,
-                        onFieldSubmitted: (String value) {
-                          focusNode.unfocus();
-                          FocusScope.of(context).requestFocus(focusNode2);
-                        }),
+                    child: FormField(
+                      builder: (FormFieldState state) => TextField(
+                          controller: _emailController,
+                          decoration: buildInputDecoration('E-mail'),
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          focusNode: focusNode,
+                          onSubmitted: (String value) {
+                            FocusScope.of(context).requestFocus(focusNode2);
+                          }),
+                      validator: (_) => emailValidator(_emailController.text),
+                    ),
                   ),
                   SizedBox(height: 16),
                   Container(
                     decoration: buildBoxDecoration(),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      autocorrect: false,
-                      decoration: buildInputDecoration('Password'),
-                      validator: passwordValidator,
-                      focusNode: focusNode2,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (String value) {
-                        FocusScope.of(context).unfocus();
-                        SystemChannels.textInput.invokeMethod('TextInput.hide');
-                      },
+                    child: FormField(
+                      builder: (FormFieldState state) => TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        autocorrect: false,
+                        decoration: buildInputDecoration('Password'),
+                        focusNode: focusNode2,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (String value) {
+                          FocusScope.of(context).unfocus();
+                        },
+                      ),
+                      validator: (_) =>
+                          passwordValidator(_passwordController.text),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -78,14 +95,27 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                       Expanded(
                         child: RaisedButton(
-                          child: Text('Submit'),
+                          child: isSubmitting
+                              ? SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                  ),
+                                )
+                              : Text('Submit'),
                           color: Theme.of(context).accentColor,
                           textColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                           onPressed: () async {
-                            if (_formKey.currentState.validate()) {
+                            isFormInvalid = !_formKey.currentState.validate();
+                            if (!isFormInvalid) {
+                              setState(() {
+                                isSubmitting = true;
+                                isFormInvalid = false;
+                              });
                               try {
                                 FirebaseUser user =
                                     (await _auth.signInWithEmailAndPassword(
@@ -99,11 +129,17 @@ class _LoginPageState extends State<LoginPage> {
                                           builder: (BuildContext context) =>
                                               OnBoardPage()));
                               } catch (e) {
+                                setState(() {
+                                  isSubmitting = false;
+                                });
                                 print(e);
                                 return null;
                               }
                               return true;
                             }
+                            setState(() {
+                              isFormInvalid = true;
+                            });
                             return null;
                           },
                         ),
@@ -147,12 +183,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  String passwordValidator(String value) {
-    if (value.isEmpty) {
-      return 'Please enter a valid password';
-    }
-    return null;
   }
 }

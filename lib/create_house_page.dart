@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reddit_ppl/app_state.dart';
-import 'package:reddit_ppl/dashboard.dart';
+import 'package:reddit_ppl/dashboard_page.dart';
 import 'package:share/share.dart';
 
 import 'models/user.dart';

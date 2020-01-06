@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reddit_ppl/app_state.dart';
-import 'package:reddit_ppl/dashboard.dart';
+import 'package:reddit_ppl/dashboard_page.dart';
 import 'package:reddit_ppl/models/user.dart';
 
 class JoinHousePage extends StatefulWidget {
@@ -70,6 +70,7 @@ class _JoinHousePageState extends State<JoinHousePage> {
                       child: Container(
                         width: 32,
                         child: TextField(
+                          maxLength: 1,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
@@ -138,6 +139,7 @@ class _JoinHousePageState extends State<JoinHousePage> {
         child: Container(
           width: 32,
           child: TextField(
+            maxLength: 1,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.normal,

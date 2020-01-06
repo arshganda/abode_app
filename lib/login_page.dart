@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
           key: _formKey,
           child: GestureDetector(
             onTap: () {
-              FocusScope.of(context).unfocus();
+              WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
             },
             child: Container(
               padding: EdgeInsets.fromLTRB(16, 144, 16, 0),

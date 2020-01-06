@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reddit_ppl/app_state.dart';
+import 'package:reddit_ppl/dashboard.dart';
 import 'package:share/share.dart';
+
+import 'models/user.dart';
 
 class CreateHousePage extends StatefulWidget {
   @override
@@ -21,6 +25,8 @@ class _CreateHousePageState extends State<CreateHousePage> {
 
   @override
   Widget build(BuildContext context) {
+    Dio dio = Provider.of<AppState>(context).dio;
+    FirebaseAuth _auth = FirebaseAuth.instance;
     String _shareHouseCode = "";
 
     return SafeArea(
@@ -51,18 +57,28 @@ class _CreateHousePageState extends State<CreateHousePage> {
                   ),
                 ],
               ),
-              Card(
-                child: FutureBuilder(
-                  future: _houseCode,
-                  builder: (context, AsyncSnapshot<Response<String>> snapshot) {
-                    if (snapshot.hasData) {
-                      _shareHouseCode = snapshot.data.data;
-                      return Text(snapshot.data.data);
-                    } else {
-                      return Text("House code could not be generated");
-                    }
-                  },
-                ),
+              FutureBuilder(
+                future: _houseCode,
+                builder: (context, AsyncSnapshot<Response<String>> snapshot) {
+                  if (snapshot.hasData) {
+                    _shareHouseCode = snapshot.data.data;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        ...List<HouseCodeCard>.generate(5, (int index) {
+                          return HouseCodeCard(
+                              cardText: _shareHouseCode[index]);
+                        })
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("House code could not be generated");
+                  } else {
+                    return Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator());
+                  }
+                },
               ),
               Row(
                 children: <Widget>[
@@ -91,12 +107,49 @@ class _CreateHousePageState extends State<CreateHousePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        FirebaseUser _user = await _auth.currentUser();
+                        User modelUser = User(_user.uid, _user.displayName,
+                            _user.email, _shareHouseCode);
+                        await dio.post("/user", data: modelUser.toJson());
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DashboardPage()));
+                      },
                     ),
                   ),
                 ],
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HouseCodeCard extends StatelessWidget {
+  const HouseCodeCard({
+    Key key,
+    @required String cardText,
+  })  : _cardText = cardText,
+        super(key: key);
+
+  final String _cardText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
+      elevation: 6.0,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          _cardText,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 24.0,
           ),
         ),
       ),

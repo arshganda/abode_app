@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
+import 'models/user.dart';
 import 'util/login_util.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -109,12 +110,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               uuInfo.photoUrl = "";
                               await user.updateProfile(uuInfo);
                               await user.sendEmailVerification();
-
-                              await dio.post("/user", data: {
-                                "firebaseId": user.uid,
-                                "name": _nameController.text,
-                                "email": _emailController.text
-                              });
+                              User modelUser = User(user.uid,
+                                  _nameController.text, _emailController.text);
+                              await dio.post("/user", data: modelUser.toJson());
                             } else {
                               // do something else
                             }

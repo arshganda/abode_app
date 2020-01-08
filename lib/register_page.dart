@@ -65,13 +65,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
-                        controller: _nameController,
-                        decoration: buildInputDecoration('Full name'),
-                        focusNode: focusNode1,
-                        textInputAction: TextInputAction.next,
-                        onSubmitted: (_) =>
-                            FocusScope.of(context).requestFocus(focusNode2),
-                      ),
+                          controller: _nameController,
+                          decoration: buildInputDecoration('Full name'),
+                          focusNode: focusNode1,
+                          textInputAction: TextInputAction.next,
+                          onSubmitted: (_) {
+                            focusNode1.unfocus();
+                            FocusScope.of(context).requestFocus(focusNode2);
+                          }),
                       validator: (_) => nameValidator(_nameController.text),
                     ),
                   ),
@@ -80,14 +81,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
-                        controller: _emailController,
-                        decoration: buildInputDecoration('E-mail'),
-                        focusNode: focusNode2,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        onSubmitted: (_) =>
-                            FocusScope.of(context).requestFocus(focusNode3),
-                      ),
+                          controller: _emailController,
+                          decoration: buildInputDecoration('E-mail'),
+                          focusNode: focusNode2,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          onSubmitted: (_) {
+                            focusNode2.unfocus();
+                            FocusScope.of(context).requestFocus(focusNode3);
+                          }),
                       validator: (_) => emailValidator(_emailController.text),
                     ),
                   ),
@@ -101,8 +103,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         autocorrect: false,
                         focusNode: focusNode3,
                         textInputAction: TextInputAction.next,
-                        onSubmitted: (_) =>
-                            FocusScope.of(context).requestFocus(focusNode4),
+                        onSubmitted: (_) {
+                          focusNode3.unfocus();
+                          FocusScope.of(context).requestFocus(focusNode4);
+                        },
                         decoration: buildInputDecoration('Password'),
                       ),
                       validator: (_) =>
@@ -119,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         autocorrect: false,
                         focusNode: focusNode4,
                         textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                        onSubmitted: (_) => focusNode4.unfocus(),
                         decoration: buildInputDecoration('Re-enter password'),
                       ),
                       validator: (value) {
@@ -180,12 +184,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               } else {
                                 // do something else
                               }
+                            } else {
+                              setState(() {
+                                isFormInvalid = true;
+                                isSubmitting = false;
+                              });
+                              return null;
                             }
-                            setState(() {
-                              isFormInvalid = true;
-                              isSubmitting = false;
-                            });
-                            return null;
                           },
                         ),
                       ),

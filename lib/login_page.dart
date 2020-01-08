@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isSubmitting = false;
   bool isFormInvalid = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
         child: Form(
@@ -64,8 +66,10 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: buildInputDecoration('E-mail'),
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          autofocus: false,
                           focusNode: focusNode,
                           onSubmitted: (String value) {
+                            focusNode.unfocus();
                             FocusScope.of(context).requestFocus(focusNode2);
                           }),
                       validator: (_) => emailValidator(_emailController.text),
@@ -80,10 +84,11 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: true,
                         autocorrect: false,
                         decoration: buildInputDecoration('Password'),
+                        autofocus: false,
                         focusNode: focusNode2,
                         textInputAction: TextInputAction.done,
                         onSubmitted: (String value) {
-                          FocusScope.of(context).unfocus();
+                          focusNode2.unfocus();
                         },
                       ),
                       validator: (_) =>
@@ -143,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                                                     SnackBar snackBar = SnackBar(
                                                         content: Text(
                                                             "Verification e-mail sent!"));
-                                                    Scaffold.of(context)
+                                                    _scaffoldKey.currentState
                                                         .showSnackBar(snackBar);
                                                   });
                                                   Navigator.pop(context);
@@ -166,12 +171,16 @@ class _LoginPageState extends State<LoginPage> {
                                 print(e);
                                 return null;
                               }
+                              setState(() {
+                                isSubmitting = false;
+                              });
                               return true;
+                            } else {
+                              setState(() {
+                                isFormInvalid = true;
+                              });
+                              return null;
                             }
-                            setState(() {
-                              isFormInvalid = true;
-                            });
-                            return null;
                           },
                         ),
                       ),

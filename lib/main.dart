@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reddit_ppl/dashboard_page.dart';
 import 'package:reddit_ppl/login_page.dart';
 
 import 'app_state.dart';
@@ -23,8 +22,8 @@ class MyApp extends StatelessWidget {
             button: TextStyle(color: Colors.white),
           ),
         ),
-//        home: LoginPage(),
-      home: DashboardPage(),
+        home: LoginPage(),
+//      home: DashboardPage(),
       ),
     );
   }

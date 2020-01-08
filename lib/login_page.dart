@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               height: MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top,
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -122,6 +122,37 @@ class _LoginPageState extends State<LoginPage> {
                                             email: _emailController.text,
                                             password: _passwordController.text))
                                         .user;
+                                if (!user.isEmailVerified) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            title: Text("Re-send email?"),
+                                            content: Text(
+                                                "Your email is currently not verified. Check your email inbox or re-send the verification email."),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text("Close"),
+                                              ),
+                                              FlatButton(
+                                                onPressed: () {
+                                                  user
+                                                      .sendEmailVerification()
+                                                      .then((value) {
+                                                    SnackBar snackBar = SnackBar(
+                                                        content: Text(
+                                                            "Verification e-mail sent!"));
+                                                    Scaffold.of(context)
+                                                        .showSnackBar(snackBar);
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Send Email"),
+                                              ),
+                                            ],
+                                          ));
+                                }
                                 if (user != null && user.isEmailVerified)
                                   Navigator.pushReplacement(
                                       context,

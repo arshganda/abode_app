@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:reddit_ppl/registration_succesful_page.dart';
 
 import 'app_state.dart';
 import 'models/user.dart';
@@ -13,18 +14,33 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool isEmailInUse = false;
   bool isSubmitting = false;
   bool isFormInvalid = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   FocusNode focusNode1 = FocusNode();
   FocusNode focusNode2 = FocusNode();
   FocusNode focusNode3 = FocusNode();
   FocusNode focusNode4 = FocusNode();
+  FocusNode focusNode5 = FocusNode();
+
+  @override
+  void dispose() {
+    super.dispose();
+    focusNode1.dispose();
+    focusNode2.dispose();
+    focusNode3.dispose();
+    focusNode4.dispose();
+    focusNode5.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+  }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -39,8 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top,
+              height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
               padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -53,6 +68,19 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: <Widget>[
                         Text(
                           "Your name, e-mail or password are invalid.",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 16)
+                      ],
+                    ),
+                  if (isEmailInUse)
+                    Column(
+                      children: <Widget>[
+                        Text(
+                          "Your email address is already in use.",
                           style: TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -109,8 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         decoration: buildInputDecoration('Password'),
                       ),
-                      validator: (_) =>
-                          passwordValidator(_passwordController.text),
+                      validator: (_) => passwordValidator(_passwordController.text),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -127,8 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         decoration: buildInputDecoration('Re-enter password'),
                       ),
                       validator: (value) {
-                        if (_confirmPasswordController.text !=
-                            _passwordController.text) {
+                        if (_confirmPasswordController.text != _passwordController.text) {
                           return 'Passwords do not match.';
                         }
                         return null;
@@ -162,12 +188,16 @@ class _RegisterPageState extends State<RegisterPage> {
                               setState(() {
                                 isSubmitting = true;
                                 isFormInvalid = false;
+                                isEmailInUse = false;
                               });
-                              FirebaseUser user =
-                                  (await _auth.createUserWithEmailAndPassword(
-                                          email: _emailController.text,
-                                          password: _passwordController.text))
-                                      .user;
+                              FirebaseUser user;
+                              try {
+                                user = (await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
+                              } catch (e) {
+                                setState(() {
+                                  isEmailInUse = true;
+                                });
+                              }
                               if (user != null) {
                                 //do something
                                 UserUpdateInfo uuInfo = UserUpdateInfo();
@@ -175,17 +205,21 @@ class _RegisterPageState extends State<RegisterPage> {
                                 uuInfo.photoUrl = "";
                                 await user.updateProfile(uuInfo);
                                 await user.sendEmailVerification();
-                                User modelUser = User(
-                                    user.uid,
-                                    _nameController.text,
-                                    _emailController.text);
-                                await dio.post("/user",
-                                    data: modelUser.toJson());
-                              } else {
-                                // do something else
+                                User modelUser = User(user.uid, _nameController.text, _emailController.text);
+                                Response r = await dio.post("/user", data: modelUser.toJson());
+                                if (r.statusCode == 200) {
+                                  setState(() {
+                                    isSubmitting = false;
+                                  });
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => RegistrationSuccessfulPage(name: _nameController.text)),
+                                  );
+                                }
                               }
                             } else {
                               setState(() {
+                                isEmailInUse = false;
                                 isFormInvalid = true;
                                 isSubmitting = false;
                               });

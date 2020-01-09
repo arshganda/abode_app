@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         ),
         home: LoginPage(),
 //      home: DashboardPage(),
+//        home: RegistrationSuccessfulPage(name: "YEEET GANDAAAAAAAAAAAAAA"),
       ),
     );
   }

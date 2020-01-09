@@ -1,6 +1,6 @@
+import 'package:abode/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reddit_ppl/login_page.dart';
 
 import 'app_state.dart';
 
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     return Provider(
       create: (_) => AppState(),
       child: MaterialApp(
-        title: 'Surprise!',
+        title: 'Abode',
         theme: ThemeData(
           primarySwatch: Colors.red,
           backgroundColor: Color.fromARGB(255, 234, 244, 255),

@@ -1,5 +1,5 @@
+import 'package:abode/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_ppl/login_page.dart';
 
 class RegistrationSuccessfulPage extends StatelessWidget {
   final String name;

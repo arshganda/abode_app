@@ -1,4 +1,4 @@
-package dev.ganda.reddit_ppl
+package dev.ganda.abode
 
 import android.os.Bundle
 

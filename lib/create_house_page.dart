@@ -1,9 +1,9 @@
+import 'package:abode/app_state.dart';
+import 'package:abode/dashboard_page.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reddit_ppl/app_state.dart';
-import 'package:reddit_ppl/dashboard_page.dart';
 import 'package:share/share.dart';
 
 import 'models/user.dart';
@@ -67,17 +67,14 @@ class _CreateHousePageState extends State<CreateHousePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ...List<HouseCodeCard>.generate(5, (int index) {
-                          return HouseCodeCard(
-                              cardText: _shareHouseCode[index]);
+                          return HouseCodeCard(cardText: _shareHouseCode[index]);
                         })
                       ],
                     );
                   } else if (snapshot.hasError) {
                     return Text("House code could not be generated");
                   } else {
-                    return Align(
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator());
+                    return Align(alignment: Alignment.center, child: CircularProgressIndicator());
                   }
                 },
               ),
@@ -110,13 +107,9 @@ class _CreateHousePageState extends State<CreateHousePage> {
                       ),
                       onPressed: () async {
                         FirebaseUser _user = await _auth.currentUser();
-                        User modelUser = User(_user.uid, _user.displayName,
-                            _user.email, _shareHouseCode);
+                        User modelUser = User(_user.uid, _user.displayName, _user.email, _shareHouseCode);
                         await dio.post("/user", data: modelUser.toJson());
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DashboardPage()));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardPage()));
                       },
                     ),
                   ),

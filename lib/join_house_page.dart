@@ -1,10 +1,10 @@
+import 'package:abode/app_state.dart';
+import 'package:abode/dashboard_page.dart';
+import 'package:abode/models/user.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reddit_ppl/app_state.dart';
-import 'package:reddit_ppl/dashboard_page.dart';
-import 'package:reddit_ppl/models/user.dart';
 
 class JoinHousePage extends StatefulWidget {
   @override
@@ -79,8 +79,7 @@ class _JoinHousePageState extends State<JoinHousePage> {
                           controller: card5,
                           focusNode: focusNode5,
                           textInputAction: TextInputAction.done,
-                          onSubmitted: (String value) =>
-                              FocusScope.of(context).unfocus(),
+                          onSubmitted: (String value) => FocusScope.of(context).unfocus(),
                         ),
                       ),
                     ),
@@ -98,25 +97,16 @@ class _JoinHousePageState extends State<JoinHousePage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () async {
-                        String houseCode = card1.text +
-                            card2.text +
-                            card3.text +
-                            card4.text +
-                            card5.text;
+                        String houseCode = card1.text + card2.text + card3.text + card4.text + card5.text;
                         FirebaseUser _user = await _auth.currentUser();
-                        User modelUser = User(_user.uid, _user.displayName,
-                            _user.email, houseCode);
+                        User modelUser = User(_user.uid, _user.displayName, _user.email, houseCode);
                         print(modelUser);
                         print(houseCode);
-                        Response r =
-                            await dio.post("/user", data: modelUser.toJson());
+                        Response r = await dio.post("/user", data: modelUser.toJson());
                         print(r.data);
                         print(r.statusMessage);
                         print(r);
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DashboardPage()));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardPage()));
                       },
                     ),
                   ),
@@ -129,8 +119,7 @@ class _JoinHousePageState extends State<JoinHousePage> {
     );
   }
 
-  Card buildCard(TextEditingController card1, FocusNode focusNode,
-      BuildContext context, FocusNode focusNode2) {
+  Card buildCard(TextEditingController card1, FocusNode focusNode, BuildContext context, FocusNode focusNode2) {
     return Card(
       margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
       elevation: 6.0,
@@ -148,8 +137,7 @@ class _JoinHousePageState extends State<JoinHousePage> {
             controller: card1,
             focusNode: focusNode,
             textInputAction: TextInputAction.next,
-            onChanged: (String value) =>
-                FocusScope.of(context).requestFocus(focusNode2),
+            onChanged: (String value) => FocusScope.of(context).requestFocus(focusNode2),
           ),
         ),
       ),

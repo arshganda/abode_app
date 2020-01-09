@@ -1,9 +1,9 @@
+import 'package:abode/forgot_password_page.dart';
+import 'package:abode/onboard_page.dart';
+import 'package:abode/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:reddit_ppl/forgot_password_page.dart';
-import 'package:reddit_ppl/onboard_page.dart';
-import 'package:reddit_ppl/register_page.dart';
 
 import 'util/login_util.dart';
 
@@ -44,8 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top,
+              height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
               padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -102,8 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                           focusNode2.unfocus();
                         },
                       ),
-                      validator: (_) =>
-                          passwordValidator(_passwordController.text),
+                      validator: (_) => passwordValidator(_passwordController.text),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -136,57 +134,38 @@ class _LoginPageState extends State<LoginPage> {
                                 isFormInvalid = false;
                               });
                               try {
-                                FirebaseUser user =
-                                    (await _auth.signInWithEmailAndPassword(
-                                            email: _emailController.text,
-                                            password: _passwordController.text))
-                                        .user;
+                                FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
                                 if (!user.isEmailVerified) {
                                   showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
                                             title: Text("Re-send email?"),
-                                            content: Text(
-                                                "Your email is currently not verified. Check your email inbox or re-send the verification email."),
+                                            content: Text("Your email is currently not verified. Check your email inbox or re-send the verification email."),
                                             actions: <Widget>[
                                               FlatButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
+                                                onPressed: () => Navigator.pop(context),
                                                 child: Text("Close"),
-                                                textColor: Theme.of(context)
-                                                    .accentColor,
+                                                textColor: Theme.of(context).accentColor,
                                               ),
                                               FlatButton(
                                                 textColor: Colors.white,
                                                 onPressed: () {
-                                                  user
-                                                      .sendEmailVerification()
-                                                      .then((value) {
-                                                    SnackBar snackBar =
-                                                        SnackBar(
-                                                      content: Text(
-                                                          "Verification e-mail sent!"),
-                                                      behavior: SnackBarBehavior
-                                                          .floating,
+                                                  user.sendEmailVerification().then((value) {
+                                                    SnackBar snackBar = SnackBar(
+                                                      content: Text("Verification e-mail sent!"),
+                                                      behavior: SnackBarBehavior.floating,
                                                     );
-                                                    _scaffoldKey.currentState
-                                                        .showSnackBar(snackBar);
+                                                    _scaffoldKey.currentState.showSnackBar(snackBar);
                                                   });
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text("Send Email"),
-                                                color: Theme.of(context)
-                                                    .accentColor,
+                                                color: Theme.of(context).accentColor,
                                               ),
                                             ],
                                           ));
                                 }
-                                if (user != null && user.isEmailVerified)
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              OnBoardPage()));
+                                if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
                               } catch (e) {
                                 setState(() {
                                   isSubmitting = false;
@@ -214,11 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: FlatButton(
                         child: Text('Forgot password?'),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ForgotPasswordPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ForgotPasswordPage()));
                         }),
                   ),
                   Spacer(),
@@ -229,12 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                       FlatButton(
                         child: Text('Sign up'),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation1, animation2) =>
-                                          RegisterPage()));
+                          Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => RegisterPage()));
                         },
                       ),
                     ],

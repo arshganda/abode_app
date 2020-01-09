@@ -1,6 +1,6 @@
-# reddit_ppl
+# Abode
 
-App to track your Reddit PPL workouts
+Automate your chore schedule with roommates
 
 ## Getting Started
 

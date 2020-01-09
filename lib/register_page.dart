@@ -1,8 +1,8 @@
+import 'package:abode/registration_succesful_page.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reddit_ppl/registration_succesful_page.dart';
 
 import 'app_state.dart';
 import 'models/user.dart';

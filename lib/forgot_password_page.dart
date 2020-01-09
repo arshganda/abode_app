@@ -1,6 +1,6 @@
+import 'package:abode/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_ppl/register_page.dart';
 
 import 'util/login_util.dart';
 
@@ -66,8 +66,7 @@ class ForgotPasswordPage extends StatelessWidget {
                           ),
                         ),
                         onPressed: () async {
-                          await _auth.sendPasswordResetEmail(
-                              email: _emailController.text);
+                          await _auth.sendPasswordResetEmail(email: _emailController.text);
                         },
                       ),
                     ),
@@ -81,11 +80,7 @@ class ForgotPasswordPage extends StatelessWidget {
                     FlatButton(
                       child: Text('Sign up'),
                       onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    RegisterPage()));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
                       },
                     ),
                   ],

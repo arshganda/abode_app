@@ -1,7 +1,7 @@
+import 'package:abode/create_house_page.dart';
+import 'package:abode/join_house_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:reddit_ppl/create_house_page.dart';
-import 'package:reddit_ppl/join_house_page.dart';
 
 class OnBoardPage extends StatefulWidget {
   @override

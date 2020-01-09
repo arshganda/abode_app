@@ -39,13 +39,13 @@ class _OnBoardPageState extends State<OnBoardPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Spacer(flex: 17),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   FutureBuilder<FirebaseUser>(
                       future: _user,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<FirebaseUser> snapshot) {
+                      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
                         if (snapshot.hasData) {
                           return Text(
                             "Hi " + snapshot.data.displayName + "!",
@@ -55,12 +55,24 @@ class _OnBoardPageState extends State<OnBoardPage> {
                             ),
                           );
                         } else {
-                          return Text("Hi!");
+                          return Text(
+                            "Hi!",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
                         }
                       }),
-                  Text("Thanks for verifying your account.")
+                  SizedBox(height: 8),
+                  Text(
+                    "Thanks for verifying your account.",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ],
               ),
+              Spacer(flex: 1),
+              SizedBox(height: 16),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -72,15 +84,13 @@ class _OnBoardPageState extends State<OnBoardPage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CreateHousePage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateHousePage()));
                       },
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: 8),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -92,15 +102,13 @@ class _OnBoardPageState extends State<OnBoardPage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => JoinHousePage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => JoinHousePage()));
                       },
                     ),
                   ),
                 ],
               ),
+              Spacer(flex: 20),
             ],
           ),
         ),

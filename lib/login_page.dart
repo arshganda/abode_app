@@ -22,6 +22,17 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   FocusNode focusNode = FocusNode();
   FocusNode focusNode2 = FocusNode();
+  FocusNode focusNode3 = FocusNode();
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    focusNode2.dispose();
+    focusNode3.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                       Expanded(
                         child: RaisedButton(
+                          focusNode: focusNode3,
                           child: isSubmitting
                               ? SizedBox(
                                   height: 16,
@@ -115,6 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           onPressed: () async {
+                            focusNode2.unfocus();
+                            FocusScope.of(context).requestFocus(focusNode3);
                             isFormInvalid = !_formKey.currentState.validate();
                             if (!isFormInvalid) {
                               setState(() {
@@ -139,21 +153,30 @@ class _LoginPageState extends State<LoginPage> {
                                                 onPressed: () =>
                                                     Navigator.pop(context),
                                                 child: Text("Close"),
+                                                textColor: Theme.of(context)
+                                                    .accentColor,
                                               ),
                                               FlatButton(
+                                                textColor: Colors.white,
                                                 onPressed: () {
                                                   user
                                                       .sendEmailVerification()
                                                       .then((value) {
-                                                    SnackBar snackBar = SnackBar(
-                                                        content: Text(
-                                                            "Verification e-mail sent!"));
+                                                    SnackBar snackBar =
+                                                        SnackBar(
+                                                      content: Text(
+                                                          "Verification e-mail sent!"),
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                    );
                                                     _scaffoldKey.currentState
                                                         .showSnackBar(snackBar);
                                                   });
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text("Send Email"),
+                                                color: Theme.of(context)
+                                                    .accentColor,
                                               ),
                                             ],
                                           ));

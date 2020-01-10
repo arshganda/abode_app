@@ -1,10 +1,15 @@
+import 'package:abode/app_state.dart';
+import 'package:abode/dashboard_page.dart';
 import 'package:abode/forgot_password_page.dart';
 import 'package:abode/onboard_page.dart';
 import 'package:abode/register_page.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import 'models/user.dart';
 import 'util/login_util.dart';
 
 class LoginPage extends StatefulWidget {
@@ -36,6 +41,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    Dio dio = Provider.of<AppState>(context).dio;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).primaryColor,
@@ -165,7 +172,11 @@ class _LoginPageState extends State<LoginPage> {
                                             ],
                                           ));
                                 }
-                                if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
+                                Response r = await dio.get("/user", queryParameters: {"firebaseId": user.uid});
+                                User modelUser = User.fromJson(r.data);
+                                if (user != null && modelUser.houseCode != null)
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => DashboardPage()));
+                                else if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
                               } catch (e) {
                                 setState(() {
                                   isSubmitting = false;

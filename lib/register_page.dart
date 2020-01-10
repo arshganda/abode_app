@@ -93,6 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
+                          enabled: !isSubmitting,
                           controller: _nameController,
                           decoration: buildInputDecoration('Full name'),
                           focusNode: focusNode1,
@@ -109,6 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
+                          enabled: !isSubmitting,
                           controller: _emailController,
                           decoration: buildInputDecoration('E-mail'),
                           focusNode: focusNode2,
@@ -126,6 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
+                        enabled: !isSubmitting,
                         controller: _passwordController,
                         obscureText: true,
                         autocorrect: false,
@@ -145,6 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
+                        enabled: !isSubmitting,
                         controller: _confirmPasswordController,
                         obscureText: true,
                         autocorrect: false,
@@ -182,50 +186,52 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 )
                               : Text('Create account'),
-                          onPressed: () async {
-                            isFormInvalid = !_formKey.currentState.validate();
-                            if (!isFormInvalid) {
-                              setState(() {
-                                isSubmitting = true;
-                                isFormInvalid = false;
-                                isEmailInUse = false;
-                              });
-                              FirebaseUser user;
-                              try {
-                                user = (await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
-                              } catch (e) {
-                                setState(() {
-                                  isEmailInUse = true;
-                                });
-                              }
-                              if (user != null) {
-                                //do something
-                                UserUpdateInfo uuInfo = UserUpdateInfo();
-                                uuInfo.displayName = _nameController.text;
-                                uuInfo.photoUrl = "";
-                                await user.updateProfile(uuInfo);
-                                await user.sendEmailVerification();
-                                User modelUser = User(user.uid, _nameController.text, _emailController.text);
-                                Response r = await dio.post("/user", data: modelUser.toJson());
-                                if (r.statusCode == 200) {
-                                  setState(() {
-                                    isSubmitting = false;
-                                  });
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => RegistrationSuccessfulPage(name: _nameController.text)),
-                                  );
-                                }
-                              }
-                            } else {
-                              setState(() {
-                                isEmailInUse = false;
-                                isFormInvalid = true;
-                                isSubmitting = false;
-                              });
-                              return null;
-                            }
-                          },
+                          onPressed: isSubmitting
+                              ? null
+                              : () async {
+                                  isFormInvalid = !_formKey.currentState.validate();
+                                  if (!isFormInvalid) {
+                                    setState(() {
+                                      isSubmitting = true;
+                                      isFormInvalid = false;
+                                      isEmailInUse = false;
+                                    });
+                                    FirebaseUser user;
+                                    try {
+                                      user = (await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
+                                    } catch (e) {
+                                      setState(() {
+                                        isEmailInUse = true;
+                                      });
+                                    }
+                                    if (user != null) {
+                                      //do something
+                                      UserUpdateInfo uuInfo = UserUpdateInfo();
+                                      uuInfo.displayName = _nameController.text;
+                                      uuInfo.photoUrl = "";
+                                      await user.updateProfile(uuInfo);
+                                      await user.sendEmailVerification();
+                                      User modelUser = User(user.uid, _nameController.text, _emailController.text);
+                                      Response r = await dio.post("/user", data: modelUser.toJson());
+                                      if (r.statusCode == 200) {
+                                        setState(() {
+                                          isSubmitting = false;
+                                        });
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => RegistrationSuccessfulPage(name: _nameController.text)),
+                                        );
+                                      }
+                                    }
+                                  } else {
+                                    setState(() {
+                                      isEmailInUse = false;
+                                      isFormInvalid = true;
+                                      isSubmitting = false;
+                                    });
+                                    return null;
+                                  }
+                                },
                         ),
                       ),
                     ],
@@ -237,9 +243,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       Text("Already have an account?"),
                       FlatButton(
                         child: Text('Log in'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: isSubmitting
+                            ? null
+                            : () {
+                                Navigator.pop(context);
+                              },
                       ),
                     ],
                   ),

@@ -66,6 +66,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       key: _formKey,
                       child: FormField(
                         builder: (context) => TextField(
+                          enabled: !isSubmitting,
                           controller: _emailController,
                           decoration: buildInputDecoration('E-mail'),
                           keyboardType: TextInputType.emailAddress,
@@ -103,33 +104,35 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               Radius.circular(16),
                             ),
                           ),
-                          onPressed: () {
-                            if (!_formKey.currentState.validate()) {
-                              setState(() {
-                                isEmailInvalid = true;
-                                isSubmitting = false;
-                              });
-                            } else {
-                              setState(() {
-                                isSubmitting = true;
-                                isEmailInvalid = false;
-                              });
-                              _auth.sendPasswordResetEmail(email: _emailController.text).then((value) {
-                                setState(() {
-                                  isSubmitting = false;
-                                });
-                                SnackBar snackBar = SnackBar(
-                                  content: Text("Password reset email sent."),
-                                  behavior: SnackBarBehavior.floating,
-                                );
-                                _scaffoldKey.currentState.showSnackBar(snackBar);
-                              }).catchError((error) => {
+                          onPressed: isSubmitting
+                              ? null
+                              : () {
+                                  if (!_formKey.currentState.validate()) {
                                     setState(() {
+                                      isEmailInvalid = true;
                                       isSubmitting = false;
-                                    })
-                                  });
-                            }
-                          },
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isSubmitting = true;
+                                      isEmailInvalid = false;
+                                    });
+                                    _auth.sendPasswordResetEmail(email: _emailController.text).then((value) {
+                                      setState(() {
+                                        isSubmitting = false;
+                                      });
+                                      SnackBar snackBar = SnackBar(
+                                        content: Text("Password reset email sent."),
+                                        behavior: SnackBarBehavior.floating,
+                                      );
+                                      _scaffoldKey.currentState.showSnackBar(snackBar);
+                                    }).catchError((error) => {
+                                          setState(() {
+                                            isSubmitting = false;
+                                          })
+                                        });
+                                  }
+                                },
                         ),
                       ),
                     ],
@@ -141,9 +144,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       Text("Don't have an account?"),
                       FlatButton(
                         child: Text('Sign up'),
-                        onPressed: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
-                        },
+                        onPressed: isSubmitting
+                            ? null
+                            : () {
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
+                              },
                       ),
                     ],
                   ),

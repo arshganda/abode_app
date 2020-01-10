@@ -100,13 +100,8 @@ class _JoinHousePageState extends State<JoinHousePage> {
                         String houseCode = card1.text + card2.text + card3.text + card4.text + card5.text;
                         FirebaseUser _user = await _auth.currentUser();
                         User modelUser = User(_user.uid, _user.displayName, _user.email, houseCode);
-                        print(modelUser);
-                        print(houseCode);
                         Response r = await dio.post("/user", data: modelUser.toJson());
-                        print(r.data);
-                        print(r.statusMessage);
-                        print(r);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardPage()));
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardPage()), (Route<dynamic> route) => false);
                       },
                     ),
                   ),

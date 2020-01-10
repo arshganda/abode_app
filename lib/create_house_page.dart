@@ -91,10 +91,12 @@ class _CreateHousePageState extends State<CreateHousePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      onPressed: () {
-                        // TODO: Link to download app
-                        Share.share("Join our virtual Abode with the code $_shareHouseCode!");
-                      },
+                      onPressed: isGoingToDashboard
+                          ? null
+                          : () {
+                              // TODO: Link to download app
+                              Share.share("Join our virtual Abode with the code $_shareHouseCode!");
+                            },
                     ),
                   ),
                 ],
@@ -103,21 +105,31 @@ class _CreateHousePageState extends State<CreateHousePage> {
                 children: <Widget>[
                   Expanded(
                     child: RaisedButton(
-                      child: Text("Go to Dashboard"),
+                      child: isGoingToDashboard
+                          ? SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(
+                                backgroundColor: Colors.white,
+                              ),
+                            )
+                          : Text("Go to Dashboard"),
                       textColor: Colors.white,
                       color: Theme.of(context).accentColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      onPressed: () async {
-                        setState(() {
-                          isGoingToDashboard = true;
-                        });
-                        FirebaseUser _user = await _auth.currentUser();
-                        User modelUser = User(_user.uid, _user.displayName, _user.email, _shareHouseCode);
-                        await dio.post("/user", data: modelUser.toJson());
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardPage()), (Route<dynamic> route) => false);
-                      },
+                      onPressed: isGoingToDashboard
+                          ? null
+                          : () async {
+                              setState(() {
+                                isGoingToDashboard = true;
+                              });
+                              FirebaseUser _user = await _auth.currentUser();
+                              User modelUser = User(_user.uid, _user.displayName, _user.email, _shareHouseCode);
+                              await dio.post("/user", data: modelUser.toJson());
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardPage()), (Route<dynamic> route) => false);
+                            },
                     ),
                   ),
                 ],

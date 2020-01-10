@@ -79,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
+                          enabled: !isSubmitting,
                           controller: _emailController,
                           decoration: buildInputDecoration('E-mail'),
                           keyboardType: TextInputType.emailAddress,
@@ -97,6 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: buildBoxDecoration(),
                     child: FormField(
                       builder: (FormFieldState state) => TextField(
+                        enabled: !isSubmitting,
                         controller: _passwordController,
                         obscureText: true,
                         autocorrect: false,
@@ -131,70 +133,72 @@ class _LoginPageState extends State<LoginPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          onPressed: () async {
-                            focusNode2.unfocus();
-                            FocusScope.of(context).requestFocus(focusNode3);
-                            isFormInvalid = !_formKey.currentState.validate();
-                            if (!isFormInvalid) {
-                              setState(() {
-                                isSubmitting = true;
-                                isFormInvalid = false;
-                              });
-                              try {
-                                FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
-                                if (!user.isEmailVerified) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            title: Text("Re-send email?"),
-                                            content: Text("Your email is currently not verified. Check your email inbox or re-send the verification email."),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                onPressed: () => Navigator.pop(context),
-                                                child: Text("Close"),
-                                                textColor: Theme.of(context).accentColor,
-                                              ),
-                                              FlatButton(
-                                                textColor: Colors.white,
-                                                onPressed: () {
-                                                  user.sendEmailVerification().then((value) {
-                                                    SnackBar snackBar = SnackBar(
-                                                      content: Text("Verification e-mail sent!"),
-                                                      behavior: SnackBarBehavior.floating,
-                                                    );
-                                                    _scaffoldKey.currentState.showSnackBar(snackBar);
-                                                  });
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text("Send Email"),
-                                                color: Theme.of(context).accentColor,
-                                              ),
-                                            ],
-                                          ));
-                                }
-                                Response r = await dio.get("/user", queryParameters: {"firebaseId": user.uid});
-                                User modelUser = User.fromJson(r.data);
-                                if (user != null && modelUser.houseCode != null)
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => DashboardPage()));
-                                else if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
-                              } catch (e) {
-                                setState(() {
-                                  isSubmitting = false;
-                                });
-                                print(e);
-                                return null;
-                              }
-                              setState(() {
-                                isSubmitting = false;
-                              });
-                              return true;
-                            } else {
-                              setState(() {
-                                isFormInvalid = true;
-                              });
-                              return null;
-                            }
-                          },
+                          onPressed: isSubmitting
+                              ? null
+                              : () async {
+                                  focusNode2.unfocus();
+                                  FocusScope.of(context).requestFocus(focusNode3);
+                                  isFormInvalid = !_formKey.currentState.validate();
+                                  if (!isFormInvalid) {
+                                    setState(() {
+                                      isSubmitting = true;
+                                      isFormInvalid = false;
+                                    });
+                                    try {
+                                      FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
+                                      if (!user.isEmailVerified) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                  title: Text("Re-send email?"),
+                                                  content: Text("Your email is currently not verified. Check your email inbox or re-send the verification email."),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: Text("Close"),
+                                                      textColor: Theme.of(context).accentColor,
+                                                    ),
+                                                    FlatButton(
+                                                      textColor: Colors.white,
+                                                      onPressed: () {
+                                                        user.sendEmailVerification().then((value) {
+                                                          SnackBar snackBar = SnackBar(
+                                                            content: Text("Verification e-mail sent!"),
+                                                            behavior: SnackBarBehavior.floating,
+                                                          );
+                                                          _scaffoldKey.currentState.showSnackBar(snackBar);
+                                                        });
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text("Send Email"),
+                                                      color: Theme.of(context).accentColor,
+                                                    ),
+                                                  ],
+                                                ));
+                                      }
+                                      Response r = await dio.get("/user", queryParameters: {"firebaseId": user.uid});
+                                      User modelUser = User.fromJson(r.data);
+                                      if (user != null && modelUser.houseCode != null)
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => DashboardPage()));
+                                      else if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
+                                    } catch (e) {
+                                      setState(() {
+                                        isSubmitting = false;
+                                      });
+                                      print(e);
+                                      return null;
+                                    }
+                                    setState(() {
+                                      isSubmitting = false;
+                                    });
+                                    return true;
+                                  } else {
+                                    setState(() {
+                                      isFormInvalid = true;
+                                    });
+                                    return null;
+                                  }
+                                },
                         ),
                       ),
                     ],
@@ -203,9 +207,11 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: Alignment.centerRight,
                     child: FlatButton(
                         child: Text('Forgot password?'),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ForgotPasswordPage()));
-                        }),
+                        onPressed: isSubmitting
+                            ? null
+                            : () {
+                                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ForgotPasswordPage()));
+                              }),
                   ),
                   Spacer(),
                   Row(
@@ -214,9 +220,11 @@ class _LoginPageState extends State<LoginPage> {
                       Text("Don't have an account?"),
                       FlatButton(
                         child: Text('Sign up'),
-                        onPressed: () {
-                          Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => RegisterPage()));
-                        },
+                        onPressed: isSubmitting
+                            ? null
+                            : () {
+                                Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => RegisterPage()));
+                              },
                       ),
                     ],
                   ),

@@ -16,6 +16,7 @@ class CreateHousePage extends StatefulWidget {
 
 class _CreateHousePageState extends State<CreateHousePage> {
   Future<Response<String>> _houseCode;
+  bool isGoingToDashboard = false;
 
   @override
   void didChangeDependencies() {
@@ -58,6 +59,7 @@ class _CreateHousePageState extends State<CreateHousePage> {
                   ),
                 ],
               ),
+              SizedBox(height: 16),
               FutureBuilder(
                 future: _houseCode,
                 builder: (context, AsyncSnapshot<Response<String>> snapshot) {
@@ -78,6 +80,7 @@ class _CreateHousePageState extends State<CreateHousePage> {
                   }
                 },
               ),
+              SizedBox(height: 10),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -89,7 +92,8 @@ class _CreateHousePageState extends State<CreateHousePage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () {
-                        Share.share(_shareHouseCode);
+                        // TODO: Link to download app
+                        Share.share("Join our virtual Abode with the code $_shareHouseCode!");
                       },
                     ),
                   ),
@@ -106,10 +110,13 @@ class _CreateHousePageState extends State<CreateHousePage> {
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
                       onPressed: () async {
+                        setState(() {
+                          isGoingToDashboard = true;
+                        });
                         FirebaseUser _user = await _auth.currentUser();
                         User modelUser = User(_user.uid, _user.displayName, _user.email, _shareHouseCode);
                         await dio.post("/user", data: modelUser.toJson());
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardPage()));
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardPage()), (Route<dynamic> route) => false);
                       },
                     ),
                   ),

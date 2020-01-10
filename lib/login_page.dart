@@ -26,12 +26,12 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    super.dispose();
     focusNode.dispose();
     focusNode2.dispose();
     focusNode3.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    super.dispose();
   }
 
   @override

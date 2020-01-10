@@ -15,7 +15,7 @@ class HouseCodeCard extends StatelessWidget {
       margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
       elevation: 6.0,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Text(
           _cardText,
           style: TextStyle(

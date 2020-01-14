@@ -167,6 +167,9 @@ class _LoginPageState extends State<LoginPage> {
                                                             behavior: SnackBarBehavior.floating,
                                                           );
                                                           _scaffoldKey.currentState.showSnackBar(snackBar);
+                                                          setState(() {
+                                                            isSubmitting = false;
+                                                          });
                                                         });
                                                         Navigator.pop(context);
                                                       },

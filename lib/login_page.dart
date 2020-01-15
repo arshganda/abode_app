@@ -3,6 +3,7 @@ import 'package:abode/dashboard_page.dart';
 import 'package:abode/forgot_password_page.dart';
 import 'package:abode/onboard_page.dart';
 import 'package:abode/register_page.dart';
+import 'package:abode/widgets/textformfield_uncoupled.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,11 +44,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     Dio dio = Provider.of<AppState>(context).dio;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).primaryColor,
-      body: SafeArea(
-        child: Form(
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Container(
@@ -75,24 +76,15 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 16)
                       ],
                     ),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: FormField(
-                      builder: (FormFieldState state) => TextField(
-                          enabled: !isSubmitting,
-                          controller: _emailController,
-                          decoration: buildInputDecoration('E-mail'),
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          autofocus: false,
-                          focusNode: focusNode,
-                          onSubmitted: (String value) {
-                            focusNode.unfocus();
-                            FocusScope.of(context).requestFocus(focusNode2);
-                          }),
-                      validator: (_) => emailValidator(_emailController.text),
-                    ),
-                  ),
+                  UncoupledTextField(
+                      isEnabled: !isSubmitting,
+                      controller: _emailController,
+                      decoration: buildInputDecoration('Email'),
+                      keyboardType: TextInputType.emailAddress,
+                      action: TextInputAction.next,
+                      fn: focusNode,
+                      fn2: focusNode2,
+                      validator: emailValidator),
                   SizedBox(height: 16),
                   Container(
                     decoration: buildBoxDecoration(),

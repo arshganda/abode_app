@@ -10,8 +10,22 @@ class UncoupledTextField extends StatelessWidget {
   final FocusNode fn;
   final FocusNode fn2;
   final Function validator;
+  final Function onSubmitted;
+  final bool shouldObscureText;
+  final bool shouldAutocorrect;
 
-  const UncoupledTextField({this.isEnabled, this.controller, this.decoration, this.keyboardType, this.action, this.fn, this.fn2, this.validator});
+  const UncoupledTextField(
+      {this.isEnabled,
+      this.controller,
+      this.shouldAutocorrect = true,
+      this.shouldObscureText = false,
+      this.decoration,
+      this.keyboardType,
+      this.action,
+      this.fn,
+      this.fn2,
+      this.validator,
+      this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +33,16 @@ class UncoupledTextField extends StatelessWidget {
       decoration: buildBoxDecoration(),
       child: FormField(
         builder: (FormFieldState state) => TextField(
-            enabled: isEnabled,
-            controller: controller,
-            decoration: decoration,
-            keyboardType: keyboardType,
-            textInputAction: action,
-            focusNode: fn,
-            onSubmitted: (String value) {
-              fn.unfocus();
-              FocusScope.of(context).requestFocus(fn2);
-            }),
+          enabled: isEnabled,
+          controller: controller,
+          autocorrect: shouldAutocorrect,
+          obscureText: shouldObscureText,
+          decoration: decoration,
+          keyboardType: keyboardType,
+          textInputAction: action,
+          focusNode: fn,
+          onSubmitted: onSubmitted,
+        ),
         validator: (_) => validator(controller.text),
       ),
     );

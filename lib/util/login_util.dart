@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 String emailValidator(String value) {
-  RegExp exp = RegExp(
-      r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+  RegExp exp = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
   if (exp.hasMatch(value)) {
     return null;
   }
@@ -45,4 +44,9 @@ InputDecoration buildInputDecoration(String hintText) {
     hintText: hintText,
     contentPadding: EdgeInsets.all(16),
   );
+}
+
+void passFocus(FocusNode fn1, FocusNode fn2, BuildContext context) {
+  fn1.unfocus();
+  FocusScope.of(context).requestFocus(fn2);
 }

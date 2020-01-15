@@ -63,47 +63,29 @@ class _LoginPageState extends State<LoginPage> {
                     width: 200.0,
                   ),
                   Spacer(),
-                  if (isFormInvalid)
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          "Your e-mail/password are invalid.",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 16)
-                      ],
-                    ),
+                  if (isFormInvalid) buildInvalidText(),
                   UncoupledTextField(
-                      isEnabled: !isSubmitting,
-                      controller: _emailController,
-                      decoration: buildInputDecoration('Email'),
-                      keyboardType: TextInputType.emailAddress,
-                      action: TextInputAction.next,
-                      fn: focusNode,
-                      fn2: focusNode2,
-                      validator: emailValidator),
+                    isEnabled: !isSubmitting,
+                    controller: _emailController,
+                    decoration: buildInputDecoration('Email'),
+                    keyboardType: TextInputType.emailAddress,
+                    action: TextInputAction.next,
+                    fn: focusNode,
+                    fn2: focusNode2,
+                    validator: emailValidator,
+                    onSubmitted: (String value) => passFocus(focusNode, focusNode2, context),
+                  ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: FormField(
-                      builder: (FormFieldState state) => TextField(
-                        enabled: !isSubmitting,
-                        controller: _passwordController,
-                        obscureText: true,
-                        autocorrect: false,
-                        decoration: buildInputDecoration('Password'),
-                        autofocus: false,
-                        focusNode: focusNode2,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (String value) {
-                          focusNode2.unfocus();
-                        },
-                      ),
-                      validator: (_) => passwordValidator(_passwordController.text),
-                    ),
+                  UncoupledTextField(
+                    isEnabled: !isSubmitting,
+                    controller: _passwordController,
+                    shouldObscureText: true,
+                    shouldAutocorrect: false,
+                    decoration: buildInputDecoration('Password'),
+                    fn: focusNode2,
+                    action: TextInputAction.done,
+                    onSubmitted: (String value) => focusNode2.unfocus(),
+                    validator: passwordValidator,
                   ),
                   SizedBox(height: 10),
                   Row(
@@ -198,37 +180,60 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: FlatButton(
-                        child: Text('Forgot password?'),
-                        onPressed: isSubmitting
-                            ? null
-                            : () {
-                                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ForgotPasswordPage()));
-                              }),
-                  ),
+                  buildForgotPassword(context),
                   Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Don't have an account?"),
-                      FlatButton(
-                        child: Text('Sign up'),
-                        onPressed: isSubmitting
-                            ? null
-                            : () {
-                                Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => RegisterPage()));
-                              },
-                      ),
-                    ],
-                  ),
+                  buildSignUp(context),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Column buildInvalidText() {
+    return Column(
+      children: <Widget>[
+        Text(
+          "Your e-mail/password are invalid.",
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 16)
+      ],
+    );
+  }
+
+  Row buildSignUp(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Don't have an account?"),
+        FlatButton(
+          child: Text('Sign up'),
+          onPressed: isSubmitting
+              ? null
+              : () {
+                  Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => RegisterPage()));
+                },
+        ),
+      ],
+    );
+  }
+
+  Align buildForgotPassword(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: FlatButton(
+          child: Text('Forgot password?'),
+          onPressed: isSubmitting
+              ? null
+              : () {
+                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ForgotPasswordPage()));
+                }),
     );
   }
 }

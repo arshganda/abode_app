@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:abode/app_state.dart';
 import 'package:abode/dashboard_page.dart';
 import 'package:abode/forgot_password_page.dart';
@@ -121,37 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                                     try {
                                       FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
                                       if (!user.isEmailVerified) {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                                  title: Text("Re-send email?"),
-                                                  content: Text("Your email is currently not verified. Check your email inbox or re-send the verification email."),
-                                                  actions: <Widget>[
-                                                    FlatButton(
-                                                      onPressed: () => Navigator.pop(context),
-                                                      child: Text("Close"),
-                                                      textColor: Theme.of(context).accentColor,
-                                                    ),
-                                                    FlatButton(
-                                                      textColor: Colors.white,
-                                                      onPressed: () {
-                                                        user.sendEmailVerification().then((value) {
-                                                          SnackBar snackBar = SnackBar(
-                                                            content: Text("Verification e-mail sent!"),
-                                                            behavior: SnackBarBehavior.floating,
-                                                          );
-                                                          _scaffoldKey.currentState.showSnackBar(snackBar);
-                                                          setState(() {
-                                                            isSubmitting = false;
-                                                          });
-                                                        });
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text("Send Email"),
-                                                      color: Theme.of(context).accentColor,
-                                                    ),
-                                                  ],
-                                                ));
+                                        buildDialog(context, user);
                                       }
                                       Response r = await dio.get("/user", queryParameters: {"firebaseId": user.uid});
                                       User modelUser = User.fromJson(r.data);
@@ -190,6 +162,42 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future buildDialog(BuildContext context, FirebaseUser user) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Re-send email?"),
+              content: Text("Your email is currently not verified. Check your email inbox or re-send the verification email."),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("Close"),
+                  textColor: Theme.of(context).accentColor,
+                ),
+                FlatButton(
+                  textColor: Colors.white,
+                  onPressed: () {
+                    user.sendEmailVerification().then(showSnackBar);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Send Email"),
+                  color: Theme.of(context).accentColor,
+                ),
+              ],
+            ));
+  }
+
+  FutureOr<dynamic> showSnackBar(value) {
+    SnackBar snackBar = SnackBar(
+      content: Text("Verification e-mail sent!"),
+      behavior: SnackBarBehavior.floating,
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+    setState(() {
+      isSubmitting = false;
+    });
   }
 
   Column buildInvalidText() {

@@ -5,6 +5,7 @@ import 'package:abode/dashboard_page.dart';
 import 'package:abode/forgot_password_page.dart';
 import 'package:abode/onboard_page.dart';
 import 'package:abode/register_page.dart';
+import 'package:abode/widgets/expanded_button.dart';
 import 'package:abode/widgets/textformfield_uncoupled.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,14 +31,12 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   FocusNode focusNode = FocusNode();
   FocusNode focusNode2 = FocusNode();
-  FocusNode focusNode3 = FocusNode();
 
   @override
   void dispose() {
     super.dispose();
     focusNode.dispose();
     focusNode2.dispose();
-    focusNode3.dispose();
     _emailController.dispose();
     _passwordController.dispose();
   }
@@ -89,66 +88,9 @@ class _LoginPageState extends State<LoginPage> {
                     validator: passwordValidator,
                   ),
                   SizedBox(height: 10),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: RaisedButton(
-                          focusNode: focusNode3,
-                          child: isSubmitting
-                              ? SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child: CircularProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                  ),
-                                )
-                              : Text('Submit'),
-                          color: Theme.of(context).accentColor,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          onPressed: isSubmitting
-                              ? null
-                              : () async {
-                                  focusNode2.unfocus();
-                                  FocusScope.of(context).requestFocus(focusNode3);
-                                  isFormInvalid = !_formKey.currentState.validate();
-                                  if (!isFormInvalid) {
-                                    setState(() {
-                                      isSubmitting = true;
-                                      isFormInvalid = false;
-                                    });
-                                    try {
-                                      FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
-                                      if (!user.isEmailVerified) {
-                                        buildDialog(context, user);
-                                      }
-                                      Response r = await dio.get("/user", queryParameters: {"firebaseId": user.uid});
-                                      User modelUser = User.fromJson(r.data);
-                                      if (user != null && modelUser.houseCode != null)
-                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => DashboardPage()));
-                                      else if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
-                                    } catch (e) {
-                                      setState(() {
-                                        isSubmitting = false;
-                                      });
-                                      return null;
-                                    }
-                                    setState(() {
-                                      isSubmitting = false;
-                                    });
-                                    return true;
-                                  } else {
-                                    setState(() {
-                                      isFormInvalid = true;
-                                    });
-                                    return null;
-                                  }
-                                },
-                        ),
-                      ),
-                    ],
+                  ExpandedButton(
+                    buttonLabel: generateButtonLabel(),
+                    onPressed: isSubmitting ? null : handleLogin(dio),
                   ),
                   buildForgotPassword(context),
                   Spacer(),
@@ -160,6 +102,54 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  dynamic handleLogin(Dio dio) async {
+    focusNode2.unfocus();
+    isFormInvalid = !_formKey.currentState.validate();
+    if (!isFormInvalid) {
+      setState(() {
+        isSubmitting = true;
+        isFormInvalid = false;
+      });
+      try {
+        FirebaseUser user = (await _auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
+        if (!user.isEmailVerified) {
+          buildDialog(context, user);
+        }
+        Response r = await dio.get("/user", queryParameters: {"firebaseId": user.uid});
+        User modelUser = User.fromJson(r.data);
+        if (user != null && modelUser.houseCode != null)
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => DashboardPage()));
+        else if (user != null && user.isEmailVerified) Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => OnBoardPage()));
+      } catch (e) {
+        setState(() {
+          isSubmitting = false;
+        });
+        return null;
+      }
+      setState(() {
+        isSubmitting = false;
+      });
+      return true;
+    } else {
+      setState(() {
+        isFormInvalid = true;
+      });
+      return null;
+    }
+  }
+
+  Widget generateButtonLabel() {
+    return isSubmitting
+        ? SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ),
+          )
+        : Text('Submit');
   }
 
   Future buildDialog(BuildContext context, FirebaseUser user) {

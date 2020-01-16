@@ -1,4 +1,5 @@
 import 'package:abode/registration_succesful_page.dart';
+import 'package:abode/widgets/expanded_button.dart';
 import 'package:abode/widgets/textformfield_uncoupled.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -112,75 +113,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     validator: validatePassword,
                   ),
                   SizedBox(height: 10),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(16),
-                            ),
-                          ),
-                          color: Theme.of(context).accentColor,
-                          textColor: Colors.white,
-                          child: isSubmitting
-                              ? SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                  ),
-                                )
-                              : Text('Create account'),
-                          onPressed: isSubmitting
-                              ? null
-                              : () async {
-                                  isFormInvalid = !_formKey.currentState.validate();
-                                  if (!isFormInvalid) {
-                                    setState(() {
-                                      isSubmitting = true;
-                                      isFormInvalid = false;
-                                      isEmailInUse = false;
-                                    });
-                                    FirebaseUser user;
-                                    try {
-                                      user = (await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
-                                    } catch (e) {
-                                      setState(() {
-                                        isEmailInUse = true;
-                                      });
-                                    }
-                                    if (user != null) {
-                                      //do something
-                                      UserUpdateInfo uuInfo = UserUpdateInfo();
-                                      uuInfo.displayName = _nameController.text;
-                                      uuInfo.photoUrl = "";
-                                      await user.updateProfile(uuInfo);
-                                      await user.sendEmailVerification();
-                                      User modelUser = User(user.uid, _nameController.text, _emailController.text);
-                                      Response r = await dio.post("/user", data: modelUser.toJson());
-                                      if (r.statusCode == 200) {
-                                        setState(() {
-                                          isSubmitting = false;
-                                        });
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => RegistrationSuccessfulPage(name: _nameController.text)),
-                                        );
-                                      }
-                                    }
-                                  } else {
-                                    setState(() {
-                                      isEmailInUse = false;
-                                      isFormInvalid = true;
-                                      isSubmitting = false;
-                                    });
-                                    return null;
-                                  }
-                                },
-                        ),
-                      ),
-                    ],
+                  ExpandedButton(
+                    buttonLabel: generateButtonLabel(),
+                    onPressed: isSubmitting ? null : handleRegister(dio),
                   ),
                   Spacer(),
                   buildLoginPrompt(context),
@@ -191,6 +126,18 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  Widget generateButtonLabel() {
+    return isSubmitting
+        ? SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ),
+          )
+        : Text('Create account');
   }
 
   Column buildFormInvalidText() {
@@ -245,5 +192,50 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ],
     );
+  }
+
+  dynamic handleRegister(Dio dio) async {
+    isFormInvalid = !_formKey.currentState.validate();
+    if (!isFormInvalid) {
+      setState(() {
+        isSubmitting = true;
+        isFormInvalid = false;
+        isEmailInUse = false;
+      });
+      FirebaseUser user;
+      try {
+        user = (await _auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text)).user;
+      } catch (e) {
+        setState(() {
+          isEmailInUse = true;
+        });
+        return;
+      }
+      if (user != null) {
+        UserUpdateInfo uuInfo = UserUpdateInfo();
+        uuInfo.displayName = _nameController.text;
+        uuInfo.photoUrl = "";
+        await user.updateProfile(uuInfo);
+        await user.sendEmailVerification();
+        User modelUser = User(user.uid, _nameController.text, _emailController.text);
+        Response r = await dio.post("/user", data: modelUser.toJson());
+        if (r.statusCode == 200) {
+          setState(() {
+            isSubmitting = false;
+          });
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => RegistrationSuccessfulPage(name: _nameController.text)),
+          );
+        }
+      }
+    } else {
+      setState(() {
+        isEmailInUse = false;
+        isFormInvalid = true;
+        isSubmitting = false;
+      });
+      return null;
+    }
   }
 }

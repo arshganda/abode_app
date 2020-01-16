@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:abode/register_page.dart';
+import 'package:abode/widgets/expanded_button.dart';
+import 'package:abode/widgets/textformfield_uncoupled.dart';
+import 'package:abode/widgets/two_level_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -25,14 +30,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).backgroundColor,
-      appBar: AppBar(
-        title: Text('Forgot Password'),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Theme.of(context).backgroundColor,
+        appBar: AppBar(
+          title: Text('Forgot Password'),
+        ),
+        body: SingleChildScrollView(
           child: Container(
               height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
               padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -41,121 +46,102 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Spacer(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        "Please enter your registered e-mail.",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        "We will send you an e-mail with instructions to reset your account password.",
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  TwoLevelText(
+                    titleText: "Please enter your registered email.",
+                    contentText: "We will send you an e-mail with instructions to reset your account password.",
                   ),
                   SizedBox(height: 32),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: Form(
-                      key: _formKey,
-                      child: FormField(
-                        builder: (context) => TextField(
-                          enabled: !isSubmitting,
-                          controller: _emailController,
-                          decoration: buildInputDecoration('E-mail'),
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        validator: (_) => emailValidator(_emailController.text),
-                      ),
+                  Form(
+                    key: _formKey,
+                    child: UncoupledTextField(
+                      isEnabled: !isSubmitting,
+                      controller: _emailController,
+                      decoration: buildInputDecoration('E-mail'),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: emailValidator,
                     ),
                   ),
                   SizedBox(height: 8),
-                  if (isEmailInvalid)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "Please enter a valid email address.",
-                        style: TextStyle(color: Colors.red, fontSize: 16),
-                      ),
-                    ),
+                  if (isEmailInvalid) buildEmailInvalidText(),
                   SizedBox(height: 2),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: RaisedButton(
-                          child: isSubmitting
-                              ? SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child: CircularProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                  ))
-                              : Text('Send'),
-                          color: Theme.of(context).accentColor,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(16),
-                            ),
-                          ),
-                          onPressed: isSubmitting
-                              ? null
-                              : () {
-                                  if (!_formKey.currentState.validate()) {
-                                    setState(() {
-                                      isEmailInvalid = true;
-                                      isSubmitting = false;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      isSubmitting = true;
-                                      isEmailInvalid = false;
-                                    });
-                                    _auth.sendPasswordResetEmail(email: _emailController.text).then((value) {
-                                      setState(() {
-                                        isSubmitting = false;
-                                      });
-                                      SnackBar snackBar = SnackBar(
-                                        content: Text("Password reset email sent."),
-                                        behavior: SnackBarBehavior.floating,
-                                      );
-                                      _scaffoldKey.currentState.showSnackBar(snackBar);
-                                    }).catchError((error) => {
-                                          setState(() {
-                                            isSubmitting = false;
-                                          })
-                                        });
-                                  }
-                                },
-                        ),
-                      ),
-                    ],
+                  ExpandedButton(
+                    buttonLabel: generateLabelText(),
+                    onPressed: isSubmitting ? null : handleForgotPw(),
                   ),
                   Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Don't have an account?"),
-                      FlatButton(
-                        child: Text('Sign up'),
-                        onPressed: isSubmitting
-                            ? null
-                            : () {
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
-                              },
-                      ),
-                    ],
-                  ),
+                  buildSignUpQuery(context),
                 ],
               )),
         ),
       ),
     );
+  }
+
+  Align buildEmailInvalidText() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Text(
+        "Please enter a valid email address.",
+        style: TextStyle(color: Colors.red, fontSize: 16),
+      ),
+    );
+  }
+
+  Row buildSignUpQuery(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Don't have an account?"),
+        FlatButton(
+          child: Text('Sign up'),
+          onPressed: isSubmitting
+              ? null
+              : () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
+                },
+        ),
+      ],
+    );
+  }
+
+  handleForgotPw() {
+    if (!_formKey.currentState.validate()) {
+      setState(() {
+        isEmailInvalid = true;
+        isSubmitting = false;
+      });
+    } else {
+      setState(() {
+        isSubmitting = true;
+        isEmailInvalid = false;
+      });
+      _auth.sendPasswordResetEmail(email: _emailController.text).then(showSnackBar).catchError((error) => {
+            setState(() {
+              isSubmitting = false;
+            })
+          });
+    }
+  }
+
+  FutureOr<dynamic> showSnackBar(value) {
+    setState(() {
+      isSubmitting = false;
+    });
+    SnackBar snackBar = SnackBar(
+      content: Text("Password reset email sent."),
+      behavior: SnackBarBehavior.floating,
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  Widget generateLabelText() {
+    return isSubmitting
+        ? SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ))
+        : Text('Send');
   }
 }

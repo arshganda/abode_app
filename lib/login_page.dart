@@ -73,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
                     keyboardType: TextInputType.emailAddress,
                     action: TextInputAction.next,
                     fn: focusNode,
-                    fn2: focusNode2,
                     validator: emailValidator,
                     onSubmitted: (String value) => passFocus(focusNode, focusNode2, context),
                   ),
@@ -134,7 +133,6 @@ class _LoginPageState extends State<LoginPage> {
                                       setState(() {
                                         isSubmitting = false;
                                       });
-                                      print(e);
                                       return null;
                                     }
                                     setState(() {

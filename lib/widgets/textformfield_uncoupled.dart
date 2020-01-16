@@ -8,24 +8,13 @@ class UncoupledTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final TextInputAction action;
   final FocusNode fn;
-  final FocusNode fn2;
   final Function validator;
   final Function onSubmitted;
   final bool shouldObscureText;
   final bool shouldAutocorrect;
 
   const UncoupledTextField(
-      {this.isEnabled,
-      this.controller,
-      this.shouldAutocorrect = true,
-      this.shouldObscureText = false,
-      this.decoration,
-      this.keyboardType,
-      this.action,
-      this.fn,
-      this.fn2,
-      this.validator,
-      this.onSubmitted});
+      {this.isEnabled, this.controller, this.shouldAutocorrect = true, this.shouldObscureText = false, this.decoration, this.keyboardType, this.action, this.fn, this.validator, this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {

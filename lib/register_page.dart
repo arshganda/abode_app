@@ -1,7 +1,9 @@
 import 'package:abode/registration_succesful_page.dart';
+import 'package:abode/widgets/textformfield_uncoupled.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'app_state.dart';
@@ -48,10 +50,10 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     Dio dio = Provider.of<AppState>(context).dio;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: SafeArea(
-        child: Form(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Container(
@@ -63,107 +65,51 @@ class _RegisterPageState extends State<RegisterPage> {
                   Spacer(),
                   Image.asset("abode_logo.png", width: 200.0),
                   Spacer(),
-                  if (isFormInvalid)
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          "Your name, e-mail or password are invalid.",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 16)
-                      ],
-                    ),
-                  if (isEmailInUse)
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          "Your email address is already in use.",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 16)
-                      ],
-                    ),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: FormField(
-                      builder: (FormFieldState state) => TextField(
-                          enabled: !isSubmitting,
-                          controller: _nameController,
-                          decoration: buildInputDecoration('Full name'),
-                          focusNode: focusNode1,
-                          textInputAction: TextInputAction.next,
-                          onSubmitted: (_) {
-                            focusNode1.unfocus();
-                            FocusScope.of(context).requestFocus(focusNode2);
-                          }),
-                      validator: (_) => nameValidator(_nameController.text),
-                    ),
+                  if (isFormInvalid) buildFormInvalidText(),
+                  if (isEmailInUse) buildEmailInUse(),
+                  UncoupledTextField(
+                    isEnabled: !isSubmitting,
+                    controller: _nameController,
+                    decoration: buildInputDecoration('Full name'),
+                    fn: focusNode1,
+                    action: TextInputAction.next,
+                    onSubmitted: (String value) => passFocus(focusNode1, focusNode2, context),
+                    validator: nameValidator,
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: FormField(
-                      builder: (FormFieldState state) => TextField(
-                          enabled: !isSubmitting,
-                          controller: _emailController,
-                          decoration: buildInputDecoration('E-mail'),
-                          focusNode: focusNode2,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          onSubmitted: (_) {
-                            focusNode2.unfocus();
-                            FocusScope.of(context).requestFocus(focusNode3);
-                          }),
-                      validator: (_) => emailValidator(_emailController.text),
-                    ),
+                  UncoupledTextField(
+                    isEnabled: !isSubmitting,
+                    controller: _emailController,
+                    decoration: buildInputDecoration('Email'),
+                    fn: focusNode2,
+                    action: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    onSubmitted: (String value) => passFocus(focusNode2, focusNode3, context),
+                    validator: emailValidator,
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: FormField(
-                      builder: (FormFieldState state) => TextField(
-                        enabled: !isSubmitting,
-                        controller: _passwordController,
-                        obscureText: true,
-                        autocorrect: false,
-                        focusNode: focusNode3,
-                        textInputAction: TextInputAction.next,
-                        onSubmitted: (_) {
-                          focusNode3.unfocus();
-                          FocusScope.of(context).requestFocus(focusNode4);
-                        },
-                        decoration: buildInputDecoration('Password'),
-                      ),
-                      validator: (_) => passwordValidator(_passwordController.text),
-                    ),
+                  UncoupledTextField(
+                    isEnabled: !isSubmitting,
+                    controller: _passwordController,
+                    shouldObscureText: true,
+                    shouldAutocorrect: false,
+                    decoration: buildInputDecoration('Password'),
+                    fn: focusNode3,
+                    action: TextInputAction.next,
+                    onSubmitted: (String value) => passFocus(focusNode3, focusNode4, context),
+                    validator: passwordValidator,
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: buildBoxDecoration(),
-                    child: FormField(
-                      builder: (FormFieldState state) => TextField(
-                        enabled: !isSubmitting,
-                        controller: _confirmPasswordController,
-                        obscureText: true,
-                        autocorrect: false,
-                        focusNode: focusNode4,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => focusNode4.unfocus(),
-                        decoration: buildInputDecoration('Re-enter password'),
-                      ),
-                      validator: (value) {
-                        if (_confirmPasswordController.text != _passwordController.text) {
-                          return 'Passwords do not match.';
-                        }
-                        return null;
-                      },
-                    ),
+                  UncoupledTextField(
+                    isEnabled: !isSubmitting,
+                    controller: _confirmPasswordController,
+                    shouldObscureText: true,
+                    shouldAutocorrect: false,
+                    decoration: buildInputDecoration('Re-enter password'),
+                    fn: focusNode4,
+                    action: TextInputAction.done,
+                    onSubmitted: (String value) => focusNode4.unfocus(),
+                    validator: validatePassword,
                   ),
                   SizedBox(height: 10),
                   Row(
@@ -237,26 +183,67 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                   Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Already have an account?"),
-                      FlatButton(
-                        child: Text('Log in'),
-                        onPressed: isSubmitting
-                            ? null
-                            : () {
-                                Navigator.pop(context);
-                              },
-                      ),
-                    ],
-                  ),
+                  buildLoginPrompt(context),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Column buildFormInvalidText() {
+    return Column(
+      children: <Widget>[
+        Text(
+          "Your name, e-mail or password are invalid.",
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 16)
+      ],
+    );
+  }
+
+  Column buildEmailInUse() {
+    return Column(
+      children: <Widget>[
+        Text(
+          "Your email address is already in use.",
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 16)
+      ],
+    );
+  }
+
+  String validatePassword(value) {
+    if (_confirmPasswordController.text != _passwordController.text) {
+      return 'Passwords do not match.';
+    }
+    return null;
+  }
+
+  Row buildLoginPrompt(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Already have an account?"),
+        FlatButton(
+          child: Text('Log in'),
+          onPressed: isSubmitting
+              ? null
+              : () {
+                  Navigator.pop(context);
+                },
+        ),
+      ],
     );
   }
 }

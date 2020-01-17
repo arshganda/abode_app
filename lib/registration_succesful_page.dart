@@ -1,4 +1,6 @@
 import 'package:abode/login_page.dart';
+import 'package:abode/widgets/expanded_button.dart';
+import 'package:abode/widgets/two_level_text.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationSuccessfulPage extends StatelessWidget {
@@ -23,42 +25,17 @@ class RegistrationSuccessfulPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Spacer(flex: 3),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Hi $name, welcome to Abode!",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Thank you for creating an account. An verification link has been sent to your email inbox. Please verify your account to proceed with creating or joining a house.",
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+              TwoLevelText(
+                titleText: "Hi $name, welcome to Abode!",
+                contentText: "Thank you for creating an account. An verification link has been sent to your email inbox. Please verify your "
+                    "account to proceed with creating or joining a house.",
               ),
               Spacer(
                 flex: 1,
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: RaisedButton(
-                      child: Text("Return to login"),
-                      textColor: Colors.white,
-                      color: Theme.of(context).accentColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                      onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false),
-                    ),
-                  ),
-                ],
+              ExpandedButton(
+                buttonLabel: Text("Return to login"),
+                onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false),
               ),
               Spacer(flex: 4),
             ],

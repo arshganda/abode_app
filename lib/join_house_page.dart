@@ -1,6 +1,10 @@
 import 'package:abode/app_state.dart';
 import 'package:abode/dashboard_page.dart';
 import 'package:abode/models/user.dart';
+import 'package:abode/util/login_util.dart';
+import 'package:abode/widgets/card_textfield.dart';
+import 'package:abode/widgets/expanded_button.dart';
+import 'package:abode/widgets/two_level_text.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +18,11 @@ class JoinHousePage extends StatefulWidget {
 class _JoinHousePageState extends State<JoinHousePage> {
   bool isJoining = false;
   bool isFormInvalid = false;
-  TextEditingController card1 = TextEditingController();
-  TextEditingController card2 = TextEditingController();
-  TextEditingController card3 = TextEditingController();
-  TextEditingController card4 = TextEditingController();
-  TextEditingController card5 = TextEditingController();
+  TextEditingController _card1Controller = TextEditingController();
+  TextEditingController _card2Controller = TextEditingController();
+  TextEditingController _card3Controller = TextEditingController();
+  TextEditingController _card4Controller = TextEditingController();
+  TextEditingController _card5Controller = TextEditingController();
   FocusNode focusNode = FocusNode();
   FocusNode focusNode2 = FocusNode();
   FocusNode focusNode3 = FocusNode();
@@ -28,11 +32,11 @@ class _JoinHousePageState extends State<JoinHousePage> {
   @override
   void dispose() {
     super.dispose();
-    card1.dispose();
-    card2.dispose();
-    card3.dispose();
-    card4.dispose();
-    card5.dispose();
+    _card1Controller.dispose();
+    _card2Controller.dispose();
+    _card3Controller.dispose();
+    _card4Controller.dispose();
+    _card5Controller.dispose();
     focusNode.dispose();
     focusNode2.dispose();
     focusNode3.dispose();
@@ -57,111 +61,49 @@ class _JoinHousePageState extends State<JoinHousePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Enter the invite code to join your house.",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "Get the code from one of your roommates.",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+              TwoLevelText(
+                titleText: "Enter the invite code to join your house.",
+                contentText: "Get the code from one of your roommates.",
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  buildCard(card1, focusNode, context, focusNode2),
-                  buildCard(card2, focusNode2, context, focusNode3),
-                  buildCard(card3, focusNode3, context, focusNode4),
-                  buildCard(card4, focusNode4, context, focusNode5),
-                  Card(
-                    margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    elevation: 6.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        width: 32,
-                        child: TextField(
-                          maxLength: 1,
-                          decoration: InputDecoration(
-                            counterText: "",
-                          ),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 24.0,
-                          ),
-                          controller: card5,
-                          focusNode: focusNode5,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (String value) => focusNode5.unfocus(),
-                        ),
-                      ),
-                    ),
+                  TextFieldCard(
+                    controller: _card1Controller,
+                    fn: focusNode,
+                    action: TextInputAction.next,
+                    onSubmitted: (_) => passFocus(focusNode, focusNode2, context),
+                  ),
+                  TextFieldCard(
+                    controller: _card2Controller,
+                    fn: focusNode2,
+                    action: TextInputAction.next,
+                    onSubmitted: (_) => passFocus(focusNode, focusNode2, context),
+                  ),
+                  TextFieldCard(
+                    controller: _card3Controller,
+                    fn: focusNode3,
+                    action: TextInputAction.next,
+                    onSubmitted: (_) => passFocus(focusNode, focusNode2, context),
+                  ),
+                  TextFieldCard(
+                    controller: _card4Controller,
+                    fn: focusNode4,
+                    action: TextInputAction.next,
+                    onSubmitted: (_) => passFocus(focusNode, focusNode2, context),
+                  ),
+                  TextFieldCard(
+                    controller: _card5Controller,
+                    fn: focusNode5,
+                    action: TextInputAction.done,
+                    onSubmitted: (_) => focusNode5.unfocus(),
                   ),
                 ],
               ),
-              if (isFormInvalid)
-                Padding(
-                  padding: EdgeInsets.only(bottom: 10, top: 4),
-                  child: Text(
-                    "Please enter a valid house code.",
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: RaisedButton(
-                      child: isJoining
-                          ? SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.white,
-                              ))
-                          : Text("Join house"),
-                      textColor: Colors.white,
-                      color: Theme.of(context).accentColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                      ),
-                      onPressed: () async {
-                        setState(() {
-                          isJoining = true;
-                        });
-                        String houseCode = card1.text + card2.text + card3.text + card4.text + card5.text;
-                        if (houseCode.length < 5) {
-                          setState(() {
-                            isJoining = false;
-                            isFormInvalid = true;
-                          });
-                          return;
-                        } else {
-                          setState(() {
-                            isFormInvalid = false;
-                          });
-                        }
-                        FirebaseUser _user = await _auth.currentUser();
-                        User modelUser = User(_user.uid, _user.displayName, _user.email, houseCode);
-                        Response r = await dio.post("/user", data: modelUser.toJson());
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardPage()), (Route<dynamic> route) => false);
-                        setState(() {
-                          isJoining = false;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              if (isFormInvalid) buildInvalidHouseCodeText(),
+              ExpandedButton(
+                buttonLabel: generateButtonLabel(),
+                onPressed: handleJoinHouse(dio, _auth),
               ),
             ],
           ),
@@ -170,32 +112,50 @@ class _JoinHousePageState extends State<JoinHousePage> {
     );
   }
 
-  Card buildCard(TextEditingController card1, FocusNode focusNode, BuildContext context, FocusNode focusNode2) {
-    return Card(
-      margin: EdgeInsets.only(top: 16.0, bottom: 16.0),
-      elevation: 6.0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          width: 32,
-          child: TextField(
-            maxLength: 1,
-            decoration: InputDecoration(
-              counterText: "",
-            ),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 24.0,
-            ),
-            controller: card1,
-            focusNode: focusNode,
-            textInputAction: TextInputAction.next,
-            onChanged: (String value) {
-              focusNode.unfocus();
-              FocusScope.of(context).requestFocus(focusNode2);
-            },
-          ),
+  dynamic handleJoinHouse(Dio dio, FirebaseAuth _auth) async {
+    setState(() {
+      isJoining = true;
+    });
+    String houseCode = _card1Controller.text + _card2Controller.text + _card3Controller.text + _card4Controller.text + _card5Controller.text;
+    if (houseCode.length < 5) {
+      setState(() {
+        isJoining = false;
+        isFormInvalid = true;
+      });
+      return;
+    } else {
+      setState(() {
+        isFormInvalid = false;
+      });
+    }
+    FirebaseUser _user = await _auth.currentUser();
+    User modelUser = User(_user.uid, _user.displayName, _user.email, houseCode);
+    await dio.post("/user", data: modelUser.toJson());
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => DashboardPage()), (Route<dynamic> route) => false);
+    setState(() {
+      isJoining = false;
+    });
+  }
+
+  Widget generateButtonLabel() {
+    return isJoining
+        ? SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.white,
+            ))
+        : Text("Join house");
+  }
+
+  Padding buildInvalidHouseCodeText() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10, top: 4),
+      child: Text(
+        "Please enter a valid house code.",
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 16,
         ),
       ),
     );

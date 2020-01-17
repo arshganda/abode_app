@@ -39,39 +39,40 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
         body: SingleChildScrollView(
           child: Container(
-              height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Spacer(),
-                  TwoLevelText(
-                    titleText: "Please enter your registered email.",
-                    contentText: "We will send you an e-mail with instructions to reset your account password.",
+            height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Spacer(),
+                TwoLevelText(
+                  titleText: "Please enter your registered email.",
+                  contentText: "We will send you an e-mail with instructions to reset your account password.",
+                ),
+                SizedBox(height: 32),
+                Form(
+                  key: _formKey,
+                  child: UncoupledTextField(
+                    isEnabled: !isSubmitting,
+                    controller: _emailController,
+                    decoration: buildInputDecoration('E-mail'),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: emailValidator,
                   ),
-                  SizedBox(height: 32),
-                  Form(
-                    key: _formKey,
-                    child: UncoupledTextField(
-                      isEnabled: !isSubmitting,
-                      controller: _emailController,
-                      decoration: buildInputDecoration('E-mail'),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: emailValidator,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  if (isEmailInvalid) buildEmailInvalidText(),
-                  SizedBox(height: 2),
-                  ExpandedButton(
-                    buttonLabel: generateLabelText(),
-                    onPressed: isSubmitting ? null : handleForgotPw(),
-                  ),
-                  Spacer(),
-                  buildSignUpQuery(context),
-                ],
-              )),
+                ),
+                SizedBox(height: 8),
+                if (isEmailInvalid) buildEmailInvalidText(),
+                SizedBox(height: 2),
+                ExpandedButton(
+                  buttonLabel: generateLabelText(),
+                  onPressed: isSubmitting ? null : handleForgotPw(),
+                ),
+                Spacer(),
+                buildSignUpQuery(context),
+              ],
+            ),
+          ),
         ),
       ),
     );

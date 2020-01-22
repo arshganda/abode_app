@@ -1,16 +1,11 @@
 # Abode
 
-Automate your chore schedule with roommates
+Automate your chore schedule with roommates.
 
-## Getting Started
+Previously an iOS app with Twilio integrations, currently being refactored/rewritten with Flutter to work on both Android and iOS.
+Winners of the popular vote at nwHacks 2019. Check out the devpost page [here](https://devpost.com/software/abode-tn9hc8).
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Click on the image below to see the original video demo.
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=b9wnkDnB6bI
+" target="_blank"><img src="http://img.youtube.com/vi/b9wnkDnB6bI/0.jpg" 
+alt="Video thumbnail" width="240" height="180" border="10" /></a>
